@@ -60,6 +60,16 @@ export const itemsAPI = {
     const response = await api.get(`/items/search?${params.toString()}`);
     return response.data;
   },
+
+  // Semantic search using embeddings
+  semanticSearch: async (query, limit = 10) => {
+    const params = new URLSearchParams();
+    params.append('query', query);
+    params.append('limit', limit);
+
+    const response = await api.get(`/items/semantic-search?${params.toString()}`);
+    return response.data;
+  },
 };
 
 export default api;

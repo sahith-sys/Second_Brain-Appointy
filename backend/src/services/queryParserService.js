@@ -16,7 +16,7 @@ async function parseSearchQuery(query) {
     console.log(`Parsing search query: "${query}"`);
 
     const message = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet',
+      model: 'claude-sonnet-4-5-20250929',
       max_tokens: 1024,
       messages: [{
         role: 'user',

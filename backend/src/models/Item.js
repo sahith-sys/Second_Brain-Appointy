@@ -24,6 +24,9 @@ const itemSchema = new mongoose.Schema(
     },
     imageUrl: String,
     userId: String,
+    // Semantic search fields
+    embedding: [Number], // Vector embedding for semantic search
+    ocrText: String, // Text extracted from images via OCR
   },
   { timestamps: true }
 );
