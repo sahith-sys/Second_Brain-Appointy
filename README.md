@@ -658,7 +658,7 @@ For issues, questions, or suggestions:
 
 <div align="center">
 
-**Built with ❤️ by [Your Name]**
+**Built with ❤️ by Sahith**
 
 ⭐ Star this repo if you find it useful!
 
