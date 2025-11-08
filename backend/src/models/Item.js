@@ -19,6 +19,8 @@ const itemSchema = new mongoose.Schema(
       siteName: String,
       ogType: String,
       videoId: String,
+      transcript: String,
+      summary: String,
     },
     imageUrl: String,
     userId: String,

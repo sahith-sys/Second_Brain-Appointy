@@ -34,6 +34,8 @@ exports.createItem = async (req, res) => {
           author: extractedMetadata.author,
           siteName: extractedMetadata.siteName,
           ogType: extractedMetadata.type,
+          transcript: extractedMetadata.transcript,
+          summary: extractedMetadata.summary,
         };
 
         // For YouTube videos, extract video ID

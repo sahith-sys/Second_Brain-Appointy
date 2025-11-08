@@ -52,6 +52,12 @@ chrome.runtime.onInstalled.addListener(() => {
     title: 'Sync Offline Queue',
     contexts: ['page']
   });
+
+  chrome.contextMenus.create({
+    id: 'reading-mode',
+    title: 'Open in Reading Mode',
+    contexts: ['page']
+  });
 });
 
 // Listen for messages from content script
@@ -90,6 +96,9 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
         break;
       case 'sync-offline-queue':
         await syncOfflineQueue();
+        break;
+      case 'reading-mode':
+        await activateReadingMode(tab);
         break;
     }
   } catch (error) {
@@ -355,6 +364,16 @@ async function syncOfflineQueue() {
       isSyncing = false;
     });
   });
+}
+
+// Activate reading mode
+async function activateReadingMode(tab) {
+  try {
+    await chrome.tabs.sendMessage(tab.id, { action: 'activateReadingMode' });
+  } catch (error) {
+    console.error('Error activating reading mode:', error);
+    showNotification('Error', 'Failed to activate reading mode');
+  }
 }
 
 // Show notification

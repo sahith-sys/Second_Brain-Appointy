@@ -1,9 +1,12 @@
 const ogs = require("open-graph-scraper");
 const axios = require("axios");
 const cheerio = require("cheerio");
+const { fetchYoutubeTranscript } = require("../services/youtubeService");
+const { generateVideoSummary } = require("../services/aiService");
 
 async function extractMetadata(url) {
   try {
+    console.log('=== extractMetadata called for URL:', url);
     const metadata = {
       url,
       title: null,
@@ -13,6 +16,8 @@ async function extractMetadata(url) {
       author: null,
       siteName: null,
       type: null,
+      transcript: null,
+      summary: null,
     };
 
     // Try Open Graph scraping first
@@ -32,6 +37,7 @@ async function extractMetadata(url) {
 
     // Custom scraping for specific sites
     try {
+      console.log('Starting custom scraping for:', url);
       const response = await axios.get(url, {
         headers: {
           "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
@@ -55,6 +61,28 @@ async function extractMetadata(url) {
         const videoId = extractYouTubeID(url);
         if (videoId) {
           metadata.image = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+
+          // Fetch transcript and generate summary
+          try {
+            console.log('Fetching YouTube transcript and generating summary...');
+            const transcript = await fetchYoutubeTranscript(videoId);
+
+            if (transcript) {
+              metadata.transcript = transcript;
+
+              // Generate AI summary using Claude
+              const videoTitle = metadata.title || 'YouTube Video';
+              const summary = await generateVideoSummary(transcript, videoTitle);
+
+              if (summary) {
+                metadata.summary = summary;
+                console.log('Summary generated successfully');
+              }
+            }
+          } catch (ytError) {
+            console.error('Error processing YouTube video:', ytError.message);
+            // Continue without transcript/summary
+          }
         }
       }
 

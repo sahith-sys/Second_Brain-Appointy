@@ -4,7 +4,7 @@ Your second brain - capture any thought, instantly from anywhere on the web!
 
 ## Features
 
-### ✅ Current Features (Phase 4A + 4B + 4C):
+### ✅ Current Features (Phase 4A + 4B + 4C - Complete!):
 - **Save Current Page**: Click the extension icon and save any webpage
 - **Save Selected Text**: Highlight text, right-click, and save as a note
 - **Quick Note**: Create quick notes directly from the extension popup
@@ -13,14 +13,13 @@ Your second brain - capture any thought, instantly from anywhere on the web!
 - **📋 Clipboard Monitoring**: When you copy text (Ctrl+C), a beautiful popup appears asking if you want to save it to Synapse
 - **📸 Screenshot Capture**: Capture visible portion of any webpage and save it instantly
 - **🤖 AI Chat Detection**: Automatically detects ChatGPT and Claude conversations with a floating "Save to Synapse" button
-- **📶 Offline Queue with Auto-Sync** ⭐ NEW!: Save items even when offline - they'll automatically sync when you're back online
+- **📶 Offline Queue with Auto-Sync**: Save items even when offline - they'll automatically sync when you're back online
+- **📖 Reading Mode** ⭐ NEW!: Distraction-free reading with clean text extraction, adjustable fonts, and save option
 - **Keyboard Shortcuts**:
   - `Ctrl+Shift+S` (Mac: `Cmd+Shift+S`) - Save selected text
   - `Ctrl+Shift+N` (Mac: `Cmd+Shift+N`) - Open quick note
   - `Ctrl+Shift+P` (Mac: `Cmd+Shift+P`) - Capture screenshot
-
-### 🔜 Coming Soon:
-- Reading mode
+  - `ESC` - Exit reading mode
 
 ## Installation
 
@@ -165,6 +164,37 @@ Your second brain - capture any thought, instantly from anywhere on the web!
 - Real-time sync status notifications
 - No data loss when offline
 - Queue syncs on extension startup if items are pending
+
+### Reading Mode:
+**Activation:**
+1. Visit any article or webpage with text content
+2. Right-click anywhere on the page
+3. Select "Open in Reading Mode"
+4. The page transforms into a clean, distraction-free view
+
+**Features:**
+- **Smart Text Extraction**: Automatically finds and extracts the main article content
+- **Clean Layout**: Removes ads, sidebars, navigation, and other distractions
+- **Adjustable Font Size**: Use A- and A+ buttons to decrease/increase font size
+- **Save to Synapse**: One-click save of the cleaned article
+- **Print**: Print the cleaned version of the article
+- **Close**: Click × or press ESC to exit reading mode
+
+**Toolbar Controls:**
+- **A-** - Decrease font size
+- **A+** - Increase font size
+- **Save to Synapse** - Save the cleaned article content
+- **Print** - Print the article
+- **×** - Close reading mode
+
+**Keyboard Shortcuts:**
+- `ESC` - Exit reading mode
+
+**Best For:**
+- Long articles and blog posts
+- News articles
+- Documentation
+- Any text-heavy content with distractions
 
 ### View Your Items:
 - Click "Open Dashboard" in the extension popup

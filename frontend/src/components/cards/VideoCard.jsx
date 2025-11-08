@@ -1,4 +1,8 @@
+import { useState } from 'react';
+
 const VideoCard = ({ item, onEdit, onDelete }) => {
+  const [showTranscript, setShowTranscript] = useState(false);
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -58,6 +62,47 @@ const VideoCard = ({ item, onEdit, onDelete }) => {
           <p className="text-gray-600 text-sm mb-3 line-clamp-2">
             {item.content}
           </p>
+        )}
+
+        {/* AI Summary */}
+        {item.metadata?.summary && (
+          <div className="mb-3 p-3 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-200">
+            <div className="flex items-center gap-2 mb-2">
+              <svg className="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
+              </svg>
+              <span className="text-sm font-semibold text-purple-900">AI Summary</span>
+            </div>
+            <div className="text-sm text-gray-700 whitespace-pre-line">
+              {item.metadata.summary}
+            </div>
+          </div>
+        )}
+
+        {/* Transcript (Collapsible) */}
+        {item.metadata?.transcript && (
+          <div className="mb-3">
+            <button
+              onClick={() => setShowTranscript(!showTranscript)}
+              className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 font-medium"
+            >
+              <svg
+                className={`w-4 h-4 transition-transform ${showTranscript ? 'rotate-90' : ''}`}
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+              </svg>
+              {showTranscript ? 'Hide' : 'Show'} Transcript
+            </button>
+            {showTranscript && (
+              <div className="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200 max-h-64 overflow-y-auto">
+                <p className="text-xs text-gray-700 leading-relaxed">
+                  {item.metadata.transcript}
+                </p>
+              </div>
+            )}
+          </div>
         )}
 
         {/* Watch on YouTube Button */}
