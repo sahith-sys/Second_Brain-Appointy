@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Synapse</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>Project Synapse</h1>
+      <p>Your Second Brain</p>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="actions">
+      <button id="savePageBtn" class="action-btn primary">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+          <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+        </svg>
+        <span>Save Current Page</span>
+      </button>
+
+      <button id="saveSelectionBtn" class="action-btn">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
+        </svg>
+        <span>Save Selection</span>
+      </button>
+
+      <button id="quickNoteBtn" class="action-btn">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+        </svg>
+        <span>Quick Note</span>
+      </button>
+
+      <button id="screenshotBtn" class="action-btn">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+        </svg>
+        <span>Screenshot</span>
+      </button>
+    </div>
+
+    <!-- Quick Note Form (Hidden by default) -->
+    <div id="quickNoteForm" class="quick-note-form hidden">
+      <textarea id="noteContent" placeholder="Type your note here..." rows="4"></textarea>
+      <input type="text" id="noteTags" placeholder="Tags (comma-separated)">
+      <div class="form-actions">
+        <button id="saveNoteBtn" class="btn-save">Save</button>
+        <button id="cancelNoteBtn" class="btn-cancel">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Status Message -->
+    <div id="statusMessage" class="status-message hidden"></div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <a href="#" id="openDashboard">Open Dashboard</a>
+      <span class="separator">•</span>
+      <a href="#" id="settingsLink">Settings</a>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
