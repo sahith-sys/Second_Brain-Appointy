@@ -4,13 +4,17 @@ const { extractMetadata, extractYouTubeID } = require("../utils/metadataExtracto
 
 exports.createItem = async (req, res) => {
   try {
-    const { title, content, url, tags = [], userId = "default_user" } = req.body;
+    const { title, content, url, tags = [], userId = "default_user", imageUrl, type } = req.body;
 
-    let itemData = { title, content, url, tags, userId };
+    let itemData = { title, content, url, tags, userId, imageUrl };
     let metadata = {};
 
-    // If URL is provided, extract metadata
-    if (url) {
+    // If type is explicitly provided (like 'note' from clipboard), use it and skip metadata extraction
+    if (type) {
+      itemData.type = type;
+    }
+    // Only extract metadata if URL is provided and type is not already set
+    else if (url) {
       const extractedMetadata = await extractMetadata(url);
 
       if (extractedMetadata) {
@@ -78,11 +82,11 @@ exports.getItems = async (req, res) => {
 exports.updateItem = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, content, url, tags, type } = req.body;
+    const { title, content, url, tags, type, imageUrl } = req.body;
 
     const item = await Item.findByIdAndUpdate(
       id,
-      { title, content, url, tags, type },
+      { title, content, url, tags, type, imageUrl },
       { new: true, runValidators: true }
     );
 
