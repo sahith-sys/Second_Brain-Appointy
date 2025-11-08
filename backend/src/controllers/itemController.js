@@ -1,6 +1,7 @@
 const Item = require("../models/Item");
 const { detectType } = require("../utils/parser");
 const { extractMetadata, extractYouTubeID } = require("../utils/metadataExtractor");
+const { parseSearchQuery, buildMongoQuery } = require("../services/queryParserService");
 
 exports.createItem = async (req, res) => {
   try {
@@ -133,5 +134,40 @@ exports.uploadImage = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ message: "Error uploading file", error: err.message });
+  }
+};
+
+exports.intelligentSearch = async (req, res) => {
+  try {
+    const { query } = req.query;
+
+    if (!query || query.trim() === '') {
+      return res.status(400).json({ message: "Search query is required" });
+    }
+
+    console.log(`Intelligent search query: "${query}"`);
+
+    // Parse natural language query using Claude AI
+    const parsedParams = await parseSearchQuery(query);
+
+    // Build MongoDB query from parsed parameters
+    const mongoQuery = buildMongoQuery(parsedParams);
+
+    // Execute search
+    const items = await Item.find(mongoQuery)
+      .sort({ createdAt: -1 })
+      .limit(50); // Limit to 50 results
+
+    res.json({
+      message: "Search completed",
+      query: query,
+      parsedParams: parsedParams,
+      count: items.length,
+      items: items
+    });
+
+  } catch (err) {
+    console.error('Intelligent search error:', err);
+    res.status(500).json({ message: "Error performing search", error: err.message });
   }
 };

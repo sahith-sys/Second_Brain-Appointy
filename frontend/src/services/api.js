@@ -51,6 +51,15 @@ export const itemsAPI = {
     });
     return response.data;
   },
+
+  // Intelligent natural language search
+  intelligentSearch: async (query) => {
+    const params = new URLSearchParams();
+    params.append('query', query);
+
+    const response = await api.get(`/items/search?${params.toString()}`);
+    return response.data;
+  },
 };
 
 export default api;

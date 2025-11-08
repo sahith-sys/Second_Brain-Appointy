@@ -63,8 +63,25 @@ function App() {
     }
   };
 
-  const handleSearch = () => {
-    fetchItems({ q: searchQuery, type: filterType });
+  const handleSearch = async () => {
+    // If there's a search query, use intelligent search
+    // Otherwise, use regular filtering
+    if (searchQuery.trim()) {
+      try {
+        setLoading(true);
+        const data = await itemsAPI.intelligentSearch(searchQuery);
+        setItems(data.items);
+        console.log('Intelligent search results:', data);
+      } catch (error) {
+        console.error('Error performing intelligent search:', error);
+        // Fallback to regular search
+        fetchItems({ q: searchQuery, type: filterType });
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      fetchItems({ q: searchQuery, type: filterType });
+    }
   };
 
   const handleEdit = (item) => {
@@ -96,7 +113,7 @@ function App() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search items..."
+              placeholder="Ask anything... (e.g., 'videos about AI from last month')"
               className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             />
