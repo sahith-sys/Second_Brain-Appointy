@@ -2,12 +2,15 @@ const Item = require("../models/Item");
 const { detectType } = require("../utils/parser");
 const { extractMetadata, extractYouTubeID } = require("../utils/metadataExtractor");
 const { parseSearchQuery, buildMongoQuery } = require("../services/queryParserService");
+const { generateItemEmbedding, generateEmbedding, cosineSimilarity } = require("../services/embeddingService");
+const { processUploadedImage } = require("../services/ocrService");
+const path = require("path");
 
 exports.createItem = async (req, res) => {
   try {
-    const { title, content, url, tags = [], userId = "default_user", imageUrl, type } = req.body;
+    const { title, content, url, tags = [], userId = "default_user", imageUrl, type, ocrText } = req.body;
 
-    let itemData = { title, content, url, tags, userId, imageUrl };
+    let itemData = { title, content, url, tags, userId, imageUrl, ocrText };
     let metadata = {};
 
     // If type is explicitly provided (like 'note' from clipboard), use it and skip metadata extraction
@@ -61,6 +64,15 @@ exports.createItem = async (req, res) => {
     const item = new Item(itemData);
     await item.save();
 
+    // Generate embedding asynchronously (don't wait for it)
+    generateItemEmbedding(item).then(async (embedding) => {
+      if (embedding) {
+        item.embedding = embedding;
+        await item.save();
+        console.log(`✅ Embedding generated for item: ${item._id}`);
+      }
+    }).catch(err => console.error('Error generating embedding:', err));
+
     res.status(201).json({ message: "Item saved successfully", item });
   } catch (err) {
     res.status(500).json({ message: "Error saving item", error: err.message });
@@ -85,11 +97,11 @@ exports.getItems = async (req, res) => {
 exports.updateItem = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, content, url, tags, type, imageUrl } = req.body;
+    const { title, content, url, tags, type, imageUrl, ocrText } = req.body;
 
     const item = await Item.findByIdAndUpdate(
       id,
-      { title, content, url, tags, type, imageUrl },
+      { title, content, url, tags, type, imageUrl, ocrText },
       { new: true, runValidators: true }
     );
 
@@ -126,11 +138,24 @@ exports.uploadImage = async (req, res) => {
     }
 
     const imageUrl = `/uploads/${req.file.filename}`;
+    const imagePath = path.join(__dirname, '../../uploads', req.file.filename);
+
+    // Process OCR and get extracted text
+    let ocrText = '';
+    try {
+      const ocrResult = await processUploadedImage(imagePath);
+      ocrText = ocrResult.extractedText || '';
+      console.log(`✅ OCR completed for ${req.file.filename}: ${ocrResult.textLength} characters extracted`);
+    } catch (err) {
+      console.error('OCR error:', err);
+    }
 
     res.json({
       message: "File uploaded successfully",
       imageUrl,
       filename: req.file.filename,
+      ocrText: ocrText,
+      ocrProcessed: true,
     });
   } catch (err) {
     res.status(500).json({ message: "Error uploading file", error: err.message });
@@ -169,5 +194,73 @@ exports.intelligentSearch = async (req, res) => {
   } catch (err) {
     console.error('Intelligent search error:', err);
     res.status(500).json({ message: "Error performing search", error: err.message });
+  }
+};
+
+/**
+ * Semantic search using embeddings
+ * Finds similar items based on meaning, not just keywords
+ */
+exports.semanticSearch = async (req, res) => {
+  try {
+    const { query, limit = 10 } = req.query;
+
+    if (!query || query.trim() === '') {
+      return res.status(400).json({ message: "Search query is required" });
+    }
+
+    console.log(`Semantic search query: "${query}"`);
+
+    // Generate embedding for the search query
+    const queryEmbedding = await generateEmbedding(query);
+
+    if (!queryEmbedding) {
+      return res.status(500).json({
+        message: "Failed to generate embedding for query",
+        fallback: "Try using the regular search instead"
+      });
+    }
+
+    // Get all items that have embeddings
+    const itemsWithEmbeddings = await Item.find({
+      embedding: { $exists: true, $ne: [] }
+    });
+
+    if (itemsWithEmbeddings.length === 0) {
+      return res.json({
+        message: "No items with embeddings found. Items need to be saved first to generate embeddings.",
+        query: query,
+        count: 0,
+        items: []
+      });
+    }
+
+    // Calculate similarity scores for each item
+    const itemsWithScores = itemsWithEmbeddings.map(item => ({
+      item: item,
+      similarity: cosineSimilarity(queryEmbedding, item.embedding)
+    }));
+
+    // Sort by similarity (highest first) and get top results
+    const topResults = itemsWithScores
+      .sort((a, b) => b.similarity - a.similarity)
+      .slice(0, parseInt(limit))
+      .map(result => ({
+        ...result.item.toObject(),
+        similarityScore: result.similarity.toFixed(4)
+      }));
+
+    res.json({
+      message: "Semantic search completed",
+      query: query,
+      searchType: "semantic",
+      count: topResults.length,
+      totalItemsSearched: itemsWithEmbeddings.length,
+      items: topResults
+    });
+
+  } catch (err) {
+    console.error('Semantic search error:', err);
+    res.status(500).json({ message: "Error performing semantic search", error: err.message });
   }
 };

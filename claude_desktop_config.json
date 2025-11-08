@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "second-brain": {
+      "command": "node",
+      "args": [
+        "C:\\projects\\second_brain\\backend\\src\\mcp-server.js"
+      ],
+      "env": {
+        "MONGO_URI": "mongodb+srv://sahith22bce8182_db_user:AsLdfVPvrhp3PAAn@cluster0.8dor1ib.mongodb.net/second_brain",
+        "ANTHROPY_API_KEY": "sk-LsTcwf50EacS_kxBjAbEjQ",
+        "ANTHROPIC_BASE_URL": "https://litellm-339960399182.us-central1.run.app"
+      }
+    }
+  }
+}
