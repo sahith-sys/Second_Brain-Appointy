@@ -42,17 +42,20 @@ const ItemForm = ({ onSubmit, initialData = null, onCancel }) => {
 
     try {
       let imageUrl = formData.imageUrl;
+      let ocrText = '';
 
       // If a file is selected, upload it first
       if (selectedFile) {
         const uploadResult = await itemsAPI.uploadImage(selectedFile);
         imageUrl = `http://localhost:5000${uploadResult.imageUrl}`;
+        ocrText = uploadResult.ocrText || '';
       }
 
       const submitData = {
         ...formData,
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
         imageUrl,
+        ocrText,
       };
 
       await onSubmit(submitData);
@@ -76,28 +79,58 @@ const ItemForm = ({ onSubmit, initialData = null, onCancel }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md space-y-4">
-      <h2 className="text-2xl font-bold mb-4">
-        {initialData ? 'Edit Item' : 'Add New Item'}
-      </h2>
+    <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 space-y-6">
+      <div className="flex items-center gap-3 pb-4 border-b border-gray-200">
+        <div className="bg-gradient-to-r from-indigo-500 to-purple-500 p-2 rounded-lg">
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+        </div>
+        <h2 className="text-2xl font-bold text-gray-800">
+          {initialData ? 'Edit Item' : 'Add New Item'}
+        </h2>
+      </div>
 
-      <div>
-        <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-          Title
-        </label>
-        <input
-          type="text"
-          id="title"
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter title"
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label htmlFor="title" className="block text-sm font-semibold text-gray-700 mb-2">
+            Title
+          </label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+            placeholder="Enter title"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="type" className="block text-sm font-semibold text-gray-700 mb-2">
+            Type
+          </label>
+          <select
+            id="type"
+            name="type"
+            value={formData.type}
+            onChange={handleChange}
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all appearance-none bg-white"
+          >
+            <option value="note">📝 Note</option>
+            <option value="article">📰 Article</option>
+            <option value="product">🛒 Product</option>
+            <option value="todo">✅ Todo</option>
+            <option value="video">🎬 Video</option>
+            <option value="image">🖼️ Image</option>
+            <option value="other">📦 Other</option>
+          </select>
+        </div>
       </div>
 
       <div>
-        <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="content" className="block text-sm font-semibold text-gray-700 mb-2">
           Content
         </label>
         <textarea
@@ -106,50 +139,36 @@ const ItemForm = ({ onSubmit, initialData = null, onCancel }) => {
           value={formData.content}
           onChange={handleChange}
           rows="4"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none"
           placeholder="Enter content"
         />
       </div>
 
       <div>
-        <label htmlFor="url" className="block text-sm font-medium text-gray-700 mb-1">
-          URL (optional)
+        <label htmlFor="url" className="block text-sm font-semibold text-gray-700 mb-2">
+          URL <span className="text-gray-400 font-normal">(optional)</span>
         </label>
-        <input
-          type="url"
-          id="url"
-          name="url"
-          value={formData.url}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="https://example.com"
-        />
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+            </svg>
+          </div>
+          <input
+            type="url"
+            id="url"
+            name="url"
+            value={formData.url}
+            onChange={handleChange}
+            className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+            placeholder="https://example.com"
+          />
+        </div>
       </div>
 
       <div>
-        <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">
-          Type
-        </label>
-        <select
-          id="type"
-          name="type"
-          value={formData.type}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="note">Note</option>
-          <option value="article">Article</option>
-          <option value="product">Product</option>
-          <option value="todo">Todo</option>
-          <option value="video">Video</option>
-          <option value="image">Image</option>
-          <option value="other">Other</option>
-        </select>
-      </div>
-
-      <div>
-        <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-1">
-          Tags (comma-separated)
+        <label htmlFor="tags" className="block text-sm font-semibold text-gray-700 mb-2">
+          Tags <span className="text-gray-400 font-normal">(comma-separated)</span>
         </label>
         <input
           type="text"
@@ -157,42 +176,62 @@ const ItemForm = ({ onSubmit, initialData = null, onCancel }) => {
           name="tags"
           value={formData.tags}
           onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
           placeholder="tag1, tag2, tag3"
         />
       </div>
 
       <div>
-        <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">
-          Upload Image (optional)
+        <label htmlFor="image" className="block text-sm font-semibold text-gray-700 mb-2">
+          Upload Image <span className="text-gray-400 font-normal">(optional)</span>
         </label>
-        <input
-          type="file"
-          id="image"
-          accept="image/*,.pdf"
-          onChange={handleFileChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+        <div className="relative">
+          <input
+            type="file"
+            id="image"
+            accept="image/*,.pdf"
+            onChange={handleFileChange}
+            className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all cursor-pointer hover:border-indigo-400"
+          />
+        </div>
         {selectedFile && (
-          <p className="text-sm text-gray-600 mt-1">
+          <div className="mt-3 flex items-center gap-2 text-sm bg-indigo-50 text-indigo-700 px-4 py-2 rounded-lg">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
             Selected: {selectedFile.name}
-          </p>
+          </div>
         )}
       </div>
 
-      <div className="flex gap-2 pt-2">
+      <div className="flex gap-3 pt-4 border-t border-gray-200">
         <button
           type="submit"
           disabled={uploading}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed"
+          className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl hover:shadow-lg transform hover:-translate-y-0.5 transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
         >
-          {uploading ? 'Uploading...' : initialData ? 'Update' : 'Add'} Item
+          {uploading ? (
+            <>
+              <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Uploading...
+            </>
+          ) : (
+            <>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              {initialData ? 'Update' : 'Add'} Item
+            </>
+          )}
         </button>
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
-            className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors"
+            className="px-6 py-3 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all font-semibold"
           >
             Cancel
           </button>
