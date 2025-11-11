@@ -615,19 +615,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For issues, questions, or suggestions:
 - Open an issue on GitHub
-- Email: your.email@example.com
-- Discord: Your Discord Server
-
+- Email: sahithkothuru@gmail.com
 ---
 
 ## 🗺️ Roadmap
 
 ### Planned Features
-- [ ] Browser extension for quick saving
 - [ ] Mobile app (React Native)
 - [ ] Collaborative collections
 - [ ] Advanced analytics dashboard
-- [ ] PDF text extraction
 - [ ] Audio transcription
 - [ ] Graph view of connections
 - [ ] Export to Notion, Obsidian
