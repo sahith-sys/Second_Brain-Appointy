@@ -52,6 +52,7 @@ Find your Claude Desktop config file at:
 Open `claude_desktop_config.json` and add this configuration:
 
 ```json
+require('dotenv').config();
 {
   "mcpServers": {
     "second-brain": {
@@ -60,9 +61,9 @@ Open `claude_desktop_config.json` and add this configuration:
         "C:\\projects\\second_brain\\backend\\src\\mcp-server.js"
       ],
       "env": {
-        "MONGO_URI": "mongodb+srv://sahith22bce8182_db_user:AsLdfVPvrhp3PAAn@cluster0.8dor1ib.mongodb.net/second_brain",
-        "ANTHROPY_API_KEY": "sk-LsTcwf50EacS_kxBjAbEjQ",
-        "ANTHROPIC_BASE_URL": "https://litellm-339960399182.us-central1.run.app"
+        "MONGO_URI": process.env.MONGO_URI,
+        "ANTHROPY_API_KEY": process.env.ANTHROPY_API_KEY,
+        "ANTHROPIC_BASE_URL": process.env.ANTHROPIC_BASE_URL
       }
     }
   }
@@ -157,4 +158,4 @@ Once MCP is working, try:
 - Having Claude summarize your saved articles
 - Creating new items directly from Claude Desktop conversations
 
-Enjoy your AI-powered Second Brain! 🧠✨
+Enjoy your AI-powered Second Brain!
